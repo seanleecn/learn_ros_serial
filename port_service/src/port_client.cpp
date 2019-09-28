@@ -12,8 +12,8 @@
 #include<sstream>
 using namespace std;
 
-#define rBUFFERSIZE 8；
-unsigned char r_buffer[rBUFFERSIZE]
+#define rBUFFERSIZE 8 //接收串口缓存长度
+unsigned char r_buffer[rBUFFERSIZE];//接收缓存
 
 // CRC8校验，字节求异或
 unsigned char CRC8(unsigned char *buffer)
@@ -34,7 +34,7 @@ unsigned char CRC8(unsigned char *buffer)
 }
 
 // Hex2Dec
-int main(void)
+int hex2doc(void)
 {
 	string s1,s2;
 	int a=30;
