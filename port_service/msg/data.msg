@@ -1,0 +1,2 @@
+anger 
+force

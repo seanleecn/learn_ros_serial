@@ -1,7 +1,7 @@
 /************************************
 *************客户端节点****************
 * 向/port_server服务端发送请请求内容：state
-* 服务类型gb
+* 发布/angerforce话题
 *************************************/
 #include "ros/ros.h"
 #include "port_service/state.h"
@@ -14,11 +14,43 @@ using namespace std;
 
 #define rBUFFERSIZE 8 //接收串口缓存长度
 unsigned char r_buffer[rBUFFERSIZE];//接收缓存
+unsigned char anger_buf[2];
+unsigned char force_buf[2];
+Float32 anger;
+Float32 force;
 
-// CRC8校验，字节求异或
+
+// 16进制转10进制
+unsigned int hex2int(const char* str)
+{
+    int size = strlen(str);
+    unsigned int result = 0;
+    for (int i = 0;i < size; i++)
+    {
+      	char chr = str[i];
+		unsigned int value = 0;
+		if (chr >= 'a' && chr <= 'f')
+		{
+			value = chr - 'a' + 10;
+        }
+        else if (chr >= 'A' && chr <= 'F')
+		{
+			value = chr - 'A' + 10;
+		}
+		else if (chr >= '0' && chr <= '9')
+		{
+			value = chr - '0';
+		}
+		result = result * 16 + value;
+	}
+	return result;
+}
+
+// CRC8校验
 unsigned char CRC8(unsigned char *buffer)
 {
-    unsigned char ret=0,csum;
+    unsigned char ret=0;
+    unsigned char csum;
 		if((buffer[0]==0xA5) && (buffer[1]==0x5A))
         {
 		    csum = buffer[0]^buffer[1]^buffer[2]^buffer[3]^buffer[4]^buffer[5]^buffer[6];
@@ -27,36 +59,22 @@ unsigned char CRC8(unsigned char *buffer)
             {
 			    ret = 1;
 		    }
-		    else 
-		        ret =0;
+		else
+            ret =0;
 	    }
     return ret;
 }
-
-// Hex2Dec
-/*int hex2doc(void)
-{
-	string s1,s2;
-	int a=30;
-	stringstream ss;
-	ss<<hex<<a;		 //10进制转成十六进制读入流中，，再以字符串输出
-	ss>>s2;			
-    return 0;
-}*/
 
 int main(int argc, char** argv)
 {
     // ROS初始化
     ros::init(argc, argv, "port_client");
     ros::NodeHandle nh;
-
     // 创建client并连接到server
     ros::service::waitForService("/port_server");
-    ros::ServiceClient client = nh.serviceClient<port_service::gb>("/port_server");
-    
+    ros::ServiceClient client = nh.serviceClient<port_service::state>("/port_server");
     // 创建发布anger和force的话题
-    ros::Publisher angerforce = nh.advertise<port_service::data>("angerforce",1000);
-
+    ros::Publisher angerforce = nh.advertise<std_msgs::Float32>("angerforce",1000);
     // 创建串口并测试
     serial::Serial ser
     try
@@ -86,14 +104,25 @@ int main(int argc, char** argv)
         {
             ROS_INFO("Reading from port");
             ser.read(r_buffer,rBUFFERSIZE);
+            // 打包数据
             if(CRC8(r_buffer) != 0)
             {
-                anger = r_buffer[2,3];
-                force = r_buffer[4,5];
+                int i;
+                for (i = 0; i < 2, i++);
+                {
+                    anger_buf[i] = r_buffer[2+i];
+                    force_buf[i] = r_buffer[4+i];
+                }
+                anger = hex2int(anger_buf)/32767*180;
+                force = hex2int(force_buf)/32767*180;
             }
         
+            
+            
+            
+            
             // 配置request数据
-            port_service::gb srv;
+            port_service::state srv;
             gb.request.state = 
             if (client.call(srv))
             {
