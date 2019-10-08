@@ -34,7 +34,7 @@ unsigned char CRC8(unsigned char *buffer)
 }
 
 // Hex2Dec
-int hex2doc(void)
+/*int hex2doc(void)
 {
 	string s1,s2;
 	int a=30;
@@ -42,7 +42,7 @@ int hex2doc(void)
 	ss<<hex<<a;		 //10进制转成十六进制读入流中，，再以字符串输出
 	ss>>s2;			
     return 0;
-}
+}*/
 
 int main(int argc, char** argv)
 {

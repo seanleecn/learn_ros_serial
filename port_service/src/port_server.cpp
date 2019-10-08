@@ -15,27 +15,23 @@
 #define	sBUFFERSIZE	8//串口发送缓存长度
 unsigned char s_buffer[sBUFFERSIZE];//发送缓存
 
-// //联合体，用于浮点数与16进制的快速转换
-// typedef union{
-//     unsigned char cvalue[4];
-//     float fvalue;
-// }  float_union;
+//联合体，用于浮点数与16进制的快速转换
+typedef union{
+    unsigned char cvalue[4];
+    float fvalue;
+}  float_union;
 
-// // CRC8校验，字节求异或
-// unsigned char crc8(unsigned char *buffer){
-//     unsigned char ret=0,csum;
-// 		if((buffer[0]==0xa5) && (buffer[1]==0x5a)){
-// 		csum = buffer[2]^buffer[3]^buffer[4]^buffer[5]^buffer[6];
-// 		//打印CRC校验码
-// 		ROS_INFO("check sum:0x%02x",csum);
-// 		if(csum == buffer[7]){
-// 			ret = 1;
-// 		}
-// 		else 
-// 		  ret =0;
-// 	}
-// 	return ret;
-// }
+// CRC8校验，字节求异或
+unsigned char crc8(unsigned char *buffer)
+{
+    unsigned char ret=0,csum;
+		if((buffer[0]==0xa5) && (buffer[1]==0x5a))
+        {
+		    csum = buffer[2]^buffer[3]^buffer[4]^buffer[5]^buffer[6];
+		    //打印CRC校验码
+		    ROS_INFO("check sum:0x%02x",csum);
+        }
+}
 
 // 数据打包
 void data_pack()
@@ -107,12 +103,6 @@ int main(int argc, char** argv)
             ROS_INFO("[0x%02x]",r_buffer[i]);
             ROS_INFO_STREAM("End Reading Serial Port");
             // CRC校验数据并存储数据
-            if(crc8(r_buffer)!=0){
-                int i;
-                for(i=0;i<2;i++){
-                   
-                }
-                s_buffer[4]=s_buffer[0]^s_buffer[1]^s_buffer[2]^s_buffer[3];
         }
 
     }
