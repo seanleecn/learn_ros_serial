@@ -5,7 +5,7 @@
 *************************************/
 #include "ros/ros.h"
 #include "port_service/state.h"
-
+#include "port_service/data.h"
 #include<cstdio>
 #include<iostream>
 #include<string>
@@ -18,7 +18,6 @@ unsigned char anger_buf[2];
 unsigned char force_buf[2];
 Float32 anger;
 Float32 force;
-
 
 // 16进制转10进制
 unsigned int hex2int(const char* str)
@@ -69,12 +68,13 @@ int main(int argc, char** argv)
 {
     // ROS初始化
     ros::init(argc, argv, "port_client");
+    // 创建节点句柄
     ros::NodeHandle nh;
     // 创建client并连接到server
     ros::service::waitForService("/port_server");
     ros::ServiceClient client = nh.serviceClient<port_service::state>("/port_server");
     // 创建发布anger和force的话题
-    ros::Publisher angerforce = nh.advertise<std_msgs::Float32>("angerforce",1000);
+    ros::Publisher angerforce = nh.advertise<port_service::data>("/angerforce",1000);
     // 创建串口并测试
     serial::Serial ser
     try
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
     {
         return -1;
     }
-    // 接收串口数据并进行处理
+    // 接收串口数据
     while(ros::OK())
     {
         ros::spinoence();
@@ -104,7 +104,7 @@ int main(int argc, char** argv)
         {
             ROS_INFO("Reading from port");
             ser.read(r_buffer,rBUFFERSIZE);
-            // 打包数据
+            // 处理串口数据，提取出角度，力，状态信息
             if(CRC8(r_buffer) != 0)
             {
                 int i;
@@ -115,23 +115,28 @@ int main(int argc, char** argv)
                 }
                 anger = hex2int(anger_buf)/32767*180;
                 force = hex2int(force_buf)/32767*180;
+                
             }
-        
-            
-            
-            
-            
-            // 配置request数据
-            port_service::state srv;
-            gb.request.state = 
-            if (client.call(srv))
-            {
-                ROS_INFO("send command state:%s",gb.request.state);
-            }
-            else
-            {
-                ROS_ERROR("Failed to send command");
-            }
+        port_service::data data_msg;
+        data_msg.anger = anger;
+        data_msg.force = force;
+        // 发布话题
+        pub.publish(data_msg);
+        ROS_INFO("Publish /angerforce");
+        loop_rate.sleep();
+
+
+        // 配置服务器端请求数据
+        port_service::state state_srv;
+        state.request. = 
+        if (client.call(srv))
+        {
+            ROS_INFO("send command state:%s",gb.request.state);
+        }
+        else
+        {
+            ROS_ERROR("Failed to send command");
+        }
         }
         memset(r_buffer,0,rBUFFERSIZE);
     }
