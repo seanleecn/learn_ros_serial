@@ -6,11 +6,6 @@
 #include "ros/ros.h"
 #include "port_service/state.h"
 #include "port_service/data.h"
-#include<cstdio>
-#include<iostream>
-#include<string>
-#include<sstream>
-using namespace std;
 
 #define rBUFFERSIZE 8 //接收串口缓存长度
 unsigned char r_buffer[rBUFFERSIZE];//接收缓存
@@ -75,6 +70,7 @@ int main(int argc, char** argv)
     ros::ServiceClient client = nh.serviceClient<port_service::state>("/port_server");
     // 创建发布anger和force的话题
     ros::Publisher angerforce = nh.advertise<port_service::data>("/angerforce",1000);
+    
     // 创建串口并测试
     serial::Serial ser
     try
@@ -96,6 +92,7 @@ int main(int argc, char** argv)
     {
         return -1;
     }
+    
     // 接收串口数据
     while(ros::OK())
     {
@@ -104,7 +101,7 @@ int main(int argc, char** argv)
         {
             ROS_INFO("Reading from port");
             ser.read(r_buffer,rBUFFERSIZE);
-            // 处理串口数据，提取出角度，力，状态信息
+            // 提取出角度、力、状态
             if(CRC8(r_buffer) != 0)
             {
                 int i;
@@ -115,8 +112,8 @@ int main(int argc, char** argv)
                 }
                 anger = hex2int(anger_buf)/32767*180;
                 force = hex2int(force_buf)/32767*180;
-                
             }
+        // 引用定义的data数据体
         port_service::data data_msg;
         data_msg.anger = anger;
         data_msg.force = force;
@@ -125,8 +122,7 @@ int main(int argc, char** argv)
         ROS_INFO("Publish /angerforce");
         loop_rate.sleep();
 
-
-        // 配置服务器端请求数据
+        // 发布请求
         port_service::state state_srv;
         state.request. = 
         if (client.call(srv))
@@ -136,7 +132,6 @@ int main(int argc, char** argv)
         else
         {
             ROS_ERROR("Failed to send command");
-        }
         }
         memset(r_buffer,0,rBUFFERSIZE);
     }
