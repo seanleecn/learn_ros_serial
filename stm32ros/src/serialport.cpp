@@ -1,4 +1,3 @@
-//serial_port.cpp
 #include <ros/ros.h>
 #include <serial/serial.h>
 #include <iostream>
@@ -14,7 +13,7 @@ int main(int argc, char** argv)
     //创建timeout
     serial::Timeout to = serial::Timeout::simpleTimeout(100);
     //设置要打开的串口名称
-    sp.setPort("/dev//pts/21");
+    sp.setPort("/dev//pts/23");
     //设置串口通信的波特率
     sp.setBaudrate(115200);
     //串口设置timeout
@@ -34,7 +33,7 @@ int main(int argc, char** argv)
     //判断串口是否打开成功
     if(sp.isOpen())
     {
-        ROS_INFO_STREAM("/dev//pts/21 is opened.");
+        ROS_INFO_STREAM("serial port is opened.");
     }
     else
     {
