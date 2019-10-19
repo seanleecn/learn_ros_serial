@@ -40,7 +40,7 @@ serial::Serial ser;
 /**********************************************************
  * 数据打包，将获取的cmd_vel信息打包并通过串口发送
  * ********************************************************/
-void data_pack(const geometry_msgs::Twist& cmd_vel){
+void data_pack(const geometry_msgs::Twist & cmd_vel){
 	//unsigned char i;
 	float_union Vx,Vy,Ang_v;
 	Vx.fvalue = cmd_vel.linear.x;

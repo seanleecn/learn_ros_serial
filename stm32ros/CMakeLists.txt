@@ -211,10 +211,10 @@ target_link_libraries(stm32ros
   ${catkin_LIBRARIES}
 )
 
-add_executable(serialport
-  src/serialport.cpp
+add_executable(stm32port
+  src/stm32port.cpp
 )
-add_dependencies(serialport ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(serialport
+add_dependencies(stm32port ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(stm32port
   ${catkin_LIBRARIES}
 )
