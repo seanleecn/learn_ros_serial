@@ -1,7 +1,7 @@
 /****************************
  * STM32-ROS通讯节点
  * 订阅cmd_ang话题获得角度
- * 订阅cmd_ang回调函数，通过串口发送角度到STM32
+ * 订阅cmd_ang回调函数，cmd_ang得到角度后，由串口发送角度到STM32
  * 通过串口接受编码器信息
  * **************************/
 #include <ros/ros.h>
@@ -17,24 +17,6 @@ unsigned char r_buffer[rBUFFERSIZE];//接收缓存区
 
 // 创建serial类
 serial::Serial ser;
-
-// 数据校验，CRC8校验，字节位取亦或
-unsigned char crc8(unsigned char *buffer)
-{
-	unsigned char ret=0,csum;
-	//int i;
-	if((buffer[0]==0xaa) && (buffer[1]==0xaa))
-    {
-		csum = buffer[2]^buffer[3]^buffer[4]^buffer[5]^buffer[6];
-		if(csum == buffer[7])
-        {
-			ret = 1;//校验通过，数据包正确
-		}
-		else 
-		  ret =0;//校验失败，丢弃数据包
-	}
-	return ret;
-}
 
 // 数据打包，从预先定义的/cmd_ang话题获得角度
 void data_pack(const geometry_msgs::Twist& cmd_ang)
@@ -99,19 +81,16 @@ int main (int argc, char** argv)
         if(ser.available())
 		{
             ROS_INFO_STREAM("Reading from serial port");
-			// 读取串口数据
+			// 读取串口发来的数据
 			ser.read(r_buffer,rBUFFERSIZE);
-			// 校验读取的数据完整性
-			if(crc8(r_buffer) != 0)
-			{
-				// 打印角度值
-				for(int i=0; i<rBUFFERSIZE; i++)
-            	{
-                	// 16进制的方式打印到屏幕
-                	// std::cout << std::hex << (r_buffer[i] & 0xff) << " ";
-                	std::cout << (r_buffer[i] ) << " ";
-            	}
-			}
+			// 打印数据
+			for(int i=0; i<rBUFFERSIZE; i++)
+            {
+                // 16进制的方式打印到屏幕
+                // std::cout << std::hex << (r_buffer[i] & 0xff) << " ";
+                std::cout << (r_buffer[i] ) << " ";
+            }
+			
 		}
 	}
 }
