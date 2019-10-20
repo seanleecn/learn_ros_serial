@@ -15,7 +15,7 @@
 unsigned char s_buffer[sBUFFERSIZE];//发送缓存区
 unsigned char r_buffer[rBUFFERSIZE];//接收缓存区
 
-// 创建Serial类
+// 创建serial类
 serial::Serial ser;
 
 // 数据校验，CRC8校验，字节位取亦或
@@ -43,7 +43,7 @@ void data_pack(const geometry_msgs::Twist& cmd_ang)
 	// 报文头
 	s_buffer[0] = 0xaa;
 	s_buffer[1] = 0xaa;
-	// 角度
+	// 角度(根据cmd_ang给buffer赋值)
 	
 	// 数据写入串口
     ser.write(s_buffer,sBUFFERSIZE);
@@ -90,7 +90,7 @@ int main (int argc, char** argv)
         return -1;
     }
 	
-	//10hz频率执行程序
+	// 10hz频率执行程序
     ros::Rate loop_rate(10);
     while(ros::ok())
 	{
@@ -107,8 +107,8 @@ int main (int argc, char** argv)
 				// 打印角度值
 				for(int i=0; i<rBUFFERSIZE; i++)
             	{
-                	//16进制的方式打印到屏幕
-                	//std::cout << std::hex << (buffer[i] & 0xff) << " ";
+                	// 16进制的方式打印到屏幕
+                	// std::cout << std::hex << (r_buffer[i] & 0xff) << " ";
                 	std::cout << (r_buffer[i] ) << " ";
             	}
 			}

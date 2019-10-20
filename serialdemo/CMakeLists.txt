@@ -219,11 +219,10 @@ target_link_libraries(my_serial_node
   ${catkin_LIBRARIES}
 )
 
-
-add_executable(serialport
-  src/serialport.cpp
+add_executable(serialdemo
+  src/serialdemo.cpp
 )
-add_dependencies(serialport ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(serialport
+add_dependencies(serialdemo ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(serialdemo
   ${catkin_LIBRARIES}
 )

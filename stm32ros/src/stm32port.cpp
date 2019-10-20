@@ -15,7 +15,7 @@ int main(int argc, char** argv)
     // 创建serial类
     serial::Serial ser;
     // 串口名称
-    ser.setPort("/dev//pts/21");
+    ser.setPort("/dev//pts/20");
     // 波特率
     ser.setBaudrate(115200);
  
@@ -32,13 +32,13 @@ int main(int argc, char** argv)
     // 判断串口是否打开成功
     if(ser.isOpen())
     {
-        ROS_INFO_STREAM("/dev//pts/21 is opened.");
+        ROS_INFO_STREAM("/dev//pts/20 is opened.");
     }
     else
     {
         return -1;
     }
-    // 循环频率
+    // 10hz频率执行程序
     ros::Rate loop_rate(500);
     
     while(ros::ok())
@@ -47,19 +47,19 @@ int main(int argc, char** argv)
         size_t n = ser.available();
         if(n!=0)
         {
-            uint8_t buffer[1024];
+            uint8_t r_buffer[1024];
             // 读出数据
-            n = ser.read(buffer, n);
+            n = ser.read(r_buffer, n);
             
             for(int i=0; i<n; i++)
             {
                 // 16进制的方式打印到屏幕
-                //std::cout << std::hex << (buffer[i] & 0xff) << " ";
-                std::cout << (buffer[i] ) << " ";
+                // std::cout << std::hex << (r_buffer[i] & 0xff) << " ";
+                std::cout << (r_buffer[i] ) << " ";
             }
             std::cout << std::endl;
             // 把数据发送回去
-            ser.write(buffer, n);
+            ser.write(r_buffer, n);
         }
         loop_rate.sleep();
     }
